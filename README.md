@@ -48,7 +48,7 @@ To get familiar with Dephy API, read demo scripts (i.e., current_control.py) wit
 Future Work after running the demo scripts:
 For the human-in-the-loop basic controller, located in the `..\Actuator-Package 7.2.0\Python\basic_controller`
 1. To run the controller, run `test_1_law.py`. Before that, you need to connect to TWO boots and change the COM ports in the `port.yaml` file
-2. To run the controller with ONE boot, modify test_1_law_left_boot.py and run it. The modification of the test_1_law_left_boot.py script has not been completed yet; it still needs to be modified. Before running the script, you still need to change the `port.yaml` file.
+2. To run the controller with ONE boot, modify `test_1_law_left_boot.py` and run it. The modification of the `test_1_law_left_boot.py` script has not been completed yet; it still needs to be modified. Before running the script, you still need to change the `port.yaml` file.
 3. The main controller definition is in `test_new_def_v2.py` file. Understand each function in the file before running the controller.
 4. The “test_old_def.py” file contains the old `dephy` API. You can compare two scripts (old and new API) to see the differences.
 
