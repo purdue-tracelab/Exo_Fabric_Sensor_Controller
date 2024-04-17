@@ -1,6 +1,9 @@
 # Exo_Fabric_Sensor_Controller
 This is the exoboot controller that fuses the exoboots and fabric sensor.
 
+## com_exo_soft_sensor 
+Use this folder for the sensor fusion of exo and soft sensors.
+
 # Dephy Actuator Package
 Dephy exoboots website: 
 https://dephy.com/start/
@@ -46,6 +49,7 @@ To get familiar with Dephy API, read demo scripts (i.e., current_control.py) wit
 5. For data variables that exoboots give, read the “ActPackState.py” in `..\Actuator-Package-7.2.0\Python\flexsea\flexsea\dev_spec`
 
 Future Work after running the demo scripts:
+
 For the human-in-the-loop basic controller, put the `basic_controller` folder of this GitHub repo under `..\Actuator-Package 7.2.0\Python\` in your PC.
 1. To run the controller, run `test_1_law.py`. Before that, you need to connect to TWO boots and change the COM ports in the `port.yaml` file
 2. To run the controller with ONE boot, modify `test_1_law_left_boot.py` and run it. The modification of the `test_1_law_left_boot.py` script has not been completed yet; it still needs to be modified. Before running the script, you still need to change the `port.yaml` file.
