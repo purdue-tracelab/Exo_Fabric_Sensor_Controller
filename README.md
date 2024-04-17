@@ -11,7 +11,7 @@ EB604, ActPack 4.1
 For battery information: https://dephy.com/faster/battery/BA30/C_0002_DS_0001_V03_BA30DATA.pdf
 
 ## How to actuate Dephy Exoboots
-### This folder contains three main folders:
+### Before run any codes, make sure you have these folders:
 1. `2021-08-24-Plan-WalkOnly-Win-32-v7.2.0`: New plan 4.0 GUI for Dephy controller mode
 2. `Actuator-Package-7.2.0`: New API package for custom controller mode
 3. `dephy_bootloader`: The boot loader for switching between two controller modes
@@ -46,7 +46,7 @@ To get familiar with Dephy API, read demo scripts (i.e., current_control.py) wit
 5. For data variables that exoboots give, read the “ActPackState.py” in `..\Actuator-Package-7.2.0\Python\flexsea\flexsea\dev_spec`
 
 Future Work after running the demo scripts:
-For the human-in-the-loop basic controller, located in the `..\Actuator-Package 7.2.0\Python\basic_controller`
+For the human-in-the-loop basic controller, put the `basic_controller` folder of this GitHub repo under `..\Actuator-Package 7.2.0\Python\` in your PC.
 1. To run the controller, run `test_1_law.py`. Before that, you need to connect to TWO boots and change the COM ports in the `port.yaml` file
 2. To run the controller with ONE boot, modify `test_1_law_left_boot.py` and run it. The modification of the `test_1_law_left_boot.py` script has not been completed yet; it still needs to be modified. Before running the script, you still need to change the `port.yaml` file.
 3. The main controller definition is in `test_new_def_v2.py` file. Understand each function in the file before running the controller.
