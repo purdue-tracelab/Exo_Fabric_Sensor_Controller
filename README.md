@@ -4,7 +4,7 @@ This is the exoboot controller that fuses the exoboots and fabric sensor.
 ## Before using this branch
 Make sure you have the communication between exo and soft sensor. 
 
-Daq of soft sensor:
+DAQ of soft sensor:
 1. Current use (built by UML NERVE team): check the `soft_sensor_daq` folder, and find the `sensor driver documentation.pdf` to see the current hardware setup. 
 
    In the `sensor drive documentation`, the project box includes the rubber sensor driver, which is no longer used.
@@ -15,10 +15,11 @@ Daq of soft sensor:
    To log soft sensor data alone, you can use `com_log_four_sensors.py` file.
    Make sure all FOUR sensors are connected, and the Python script will read data from pin 0 to pin 3. 
    
-3. Another setup from UML NERVE team: Use esp-32 and Arduino BLE to build the Daq of the soft sensor. [Details here](https://github.com/jacobbreen25/nsf_soft_sensor_data_collection).
+3. Another setup from UML NERVE team: Use esp-32 and Arduino BLE to build the DAQ of the soft sensor. [Details here](https://github.com/jacobbreen25/nsf_soft_sensor_data_collection).
 
-## This branch is used for replacing manual-input normalized peak torque (npt) with hip sensor reading
-Use the maximum hip extension (MHE) value to replace the normalized peak torque parameter.
+## This branch is used for replacing manually tuned parameters with hip sensor readings
+1. Use the maximum hip extension (MHE) time to replace the rise time.
+2. Use the maximum hip extension (MHE) value to replace the normalized peak torque parameter.
 
 
 
