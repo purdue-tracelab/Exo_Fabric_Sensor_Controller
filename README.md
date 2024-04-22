@@ -47,9 +47,10 @@ To get familiar with Dephy API, read demo scripts (i.e., current_control.py) wit
 4. The API link in the first paragraph of the 3.2 section is the old API functions; DO NOT read those functions. Use the definition files located in the `..\Actuator-Package 7.2.0\Python\flexsea\flexsea`.
 5. For data variables that exoboots give, read the “ActPackState.py” in `..\Actuator-Package-7.2.0\Python\flexsea\flexsea\dev_spec`
 
-Future Work after running the demo scripts:
+### After running the demo scripts:
 
-For the human-in-the-loop basic controller, put the `basic_controller` folder of this GitHub repo under `..\Actuator-Package 7.2.0\Python\` in your PC.
+For the basic controller, put the `basic_controller` folder of this branch under `..\Actuator-Package 7.2.0\Python\` in your PC.
+This basic controller is originally from [url](https://github.com/mit-ll/dephy-boot-interface). 
 1. To run the controller, run `test_1_law.py`. Before that, you need to connect to TWO boots and change the COM ports in the `port.yaml` file
 2. To run the controller with ONE boot, modify `test_1_law_left_boot.py` and run it. The modification of the `test_1_law_left_boot.py` script has not been completed yet; it still needs to be modified. Before running the script, you still need to change the `port.yaml` file.
 3. The main controller definition is in `test_new_def_v2.py` file. Understand each function in the file before running the controller.
