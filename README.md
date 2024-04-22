@@ -56,4 +56,6 @@ For the human-in-the-loop basic controller, put the `basic_controller` folder of
 4. The “test_old_def.py” file contains the old `dephy` API. You can compare two scripts (old and new API) to see the differences.
 
 ## com_exo_soft_sensor 
-Use this folder for the sensor fusion of exo and soft sensors.
+Use this folder for the sensor fusion of exo and soft sensors. See other branches for details.
+
+### Do not use com_exo_soft_sensor folder before testing Dephy Exoboots!
