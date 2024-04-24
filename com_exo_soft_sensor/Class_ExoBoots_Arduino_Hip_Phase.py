@@ -35,7 +35,9 @@ ARMED_DURATION_PERCENT = 8
 
 gyro_conversion_factor = 32.8
 
-NO_SLACK_CURRENT = 400
+NO_SLACK_CURRENT = 200
+
+
 # NO_SLACK_CURRENT = 400
 
 
@@ -67,6 +69,8 @@ def MA_TO_A(torque):
 """
 # Class to interface with the exoboot
 """
+
+
 class ExoBoot:
 
     #
@@ -109,8 +113,8 @@ class ExoBoot:
         self.t3 = -1  # drop percent
         self.ts = -1  # top torque for the ramp
         self.tp = -1  # peak torque
-        self.user_mass = -1  # user mass
-        self.peak_torque_normalized = -1  # torque normalized to user mass
+        # self.user_mass = -1  # user mass
+        # self.peak_torque_normalized = -1  # torque normalized to user mass
 
         # parameters for the Zhang/Collins torque curve
         self.a1 = -1
@@ -125,8 +129,8 @@ class ExoBoot:
 
         self.segmentation_trigger = False  # goes high when heelstrike detected
         self.heelstrike_armed = False  # high when trigger armed
-        self.toeoff_segment_trigger = False # high when toe off detected
-        self.toeoff_armed =False # high when toeoff trigger armed
+        self.toeoff_segment_trigger = False  # high when toe off detected
+        self.toeoff_armed = False  # high when toeoff trigger armed
 
         # for new exoboots, the gyro reading is in bits, need to convert to deg
         self.segmentation_arm_threashold_raw = 150 * gyro_conversion_factor  # the threashold that must be gone above to arm the trigger
@@ -136,43 +140,48 @@ class ExoBoot:
 
         self.past_gait_times = [-1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent gait times
         self.past_toeoff_times = [-1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent toe off times
-        # self.past_mhf = [-1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent maximum hip flexion
-        self.past_mhe = [-1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent maximum hip extension
+        self.past_mhe_times = [
+                                  -1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent maximum hip extension percent gait
+        self.past_mhe_angles = [-1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent maximum hip extension angle
 
         self.expected_duration = -1  # current estimated gait duration
         self.expected_toeoff_phase = -1  # current estimated toe off phase
-        self.expected_mhf = -1  # current estimated maximum hip flexion
-        self.expected_mhe = -1  # current estimated maximum hip extension
+        # self.expected_mhf = -1  # current estimated maximum hip flexion
+        self.expected_mhe_percent_gait = -1  # current estimated maximum hip extension percent gait
+        self.expected_mhe_angle = -1  # current estimated maximum hip extension angle
 
         self.heelstrike_timestamp_current = -1  # Timestamp of the most recent heelstrike
         self.heelstrike_timestamp_previous = -1  # Timestamp of the second most recent heelstrike
-        # self.heelstrike_hip_angle_current = -1 # The hip sensor data of the most recent heelstrike
-        # self.heelstrike_hip_angle_previous = -1 # The hip sensor data of the second most recent heelstrike
+        self.heelstrike_hip_angle_current = -1  # The hip sensor data of the most recent heelstrike
+        self.heelstrike_hip_angle_previous = -1  # The hip sensor data of the second most recent heelstrike
+        self.past_heelstrike_hip_angles = [-1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent hip sensor data
+        self.expected_heelstrike_hip_angle = -1  # current estimated hip angle at heelstrike event
         self.armed_timestamp = -1  # timestamp of segmentation_trigger_threashold that the trigger was armed
 
-        self.toeoff_armed_timestamp = -1 # timestamp of armed trigger of the toeoff event
+        self.toeoff_armed_timestamp = -1  # timestamp of armed trigger of the toeoff event
         self.toeoff_timestamp_current = -1  # timestamp of the most recent toeoff
         self.toeoff_timestamp_previous = -1  # timestamp of the second most recent toeoff
-        self.toeoff_percent_gait = -1 # percent gait of the most recent toeoff
+        self.toeoff_percent_gait = -1  # percent gait of the most recent toeoff
 
         # self.accl_y_current = -1 # The y-axis acceleration value of current timestamp
-        self.accl_y_previous = -1 # The y-axis acceleration value of previous timestamp
-        self.toeoff_hip_angle_current = -1 # The hip sensor data of the most recent toeoff
-        self.toeoff_hip_angle_previous = -1 # The hip sensor data of the second most recent toeoff
+        self.accl_y_previous = -1  # The y-axis acceleration value of previous timestamp
+        self.toeoff_hip_angle_current = -1  # The hip sensor data of the most recent toeoff
+        self.toeoff_hip_angle_previous = -1  # The hip sensor data of the second most recent toeoff
 
-        self.mhe_previous = -1
-        self.mhe_current = -1 # The maximum hip extension data of the most recent gait
+        self.mhe_previous = -1  # The maximum hip extension data of the second most recent gait
+        self.mhe_current = -1  # The maximum hip extension data of the most recent gait
         self.mhe_percent_gait_current = -1  # The maximum hip extension percent gait of the most recent gait
         self.mhe_percent_gait_previous = -1  # The maximum hip extension percent gait of the second most recent gait
 
-        self.mhf_current = -1 # The maximum hip flexion data of the most recent gait
-        self.mhf_percent_gait_current = -1  # The maximum hip flexion percent gait of the most recent gait
-        self.mhf_percent_gait_previous = -1  # The maximum hip flexion percent gait of the second most recent gait
+        # self.mhf_current = -1 # The maximum hip flexion data of the most recent gait
+        # self.mhf_percent_gait_current = -1  # The maximum hip flexion percent gait of the most recent gait
+        # self.mhf_percent_gait_previous = -1  # The maximum hip flexion percent gait of the second most recent gait
 
         self.percent_gait = -1  # estimate of the percent of gait
         self.percent_gait_previous = -1  # the previous loops estimate of the percent gait. used to determine crossing of timepoints
 
-        self.current_cmd = None  # how much current are we requesting
+        self.torque_cmd = None  # how much torque are requesting
+        self.current_cmd = None  # how much current are requesting
 
         # get the labels of the values we are streaming from the boot
         self.labels_stream = ["State time", \
@@ -259,10 +268,7 @@ class ExoBoot:
         self.currentKi = 0
         self.currentff = 0
 
-
-        #
-        # this is pulled from the Dephy examples
-        #
+    # this is pulled from the Dephy examples
     def _connectToDevice(self):
         devIds = fxs.open(self.port, self.baud_rate, self.log_level)
 
@@ -271,8 +277,9 @@ class ExoBoot:
         num_attempts = 0
         # need to change here, fxGetDeviceIds() is not the new api
         get_devIds = fxs.get_ids()
-        while (num_attempts < MAX_DEVICE_ID_ATTEMPTS and (len(get_devIds) == 0 or len(get_devIds) < (self.idx + 1))):
-            # added in a check because it was only recognizing the first idx when running it in a script.  When manually running it would error the first time but be ok the second time.
+        while num_attempts < MAX_DEVICE_ID_ATTEMPTS and (len(get_devIds) == 0 or len(get_devIds) < (self.idx + 1)):
+            # added in a check because it was only recognizing the first idx when running it in a script.
+            # When manually running it would error the first time but be ok the second time.
             time.sleep(0.2)
             get_devIds = fxs.get_ids()
             print("attempt number : " + str(num_attempts))
@@ -284,53 +291,6 @@ class ExoBoot:
         print("Devid is: ", dev_id)
         return dev_id
 
-    """
-    #
-    # rotate two imu data to be consistent
-    #
-    def rotate_imu(self, accl_x_raw, accl_y_raw, accl_z_raw, gyro_x_raw, gyro_y_raw, gyro_z_raw):
-        # angleOffset = 0
-        angleOffset = m.pi
-        rotAngleY = 0
-
-        # rotate about the Y axis (which is pointing up) to get
-        # the x axis forward, z axis points to the left of the boot
-
-        if (self.idx == 1):
-            rotAngleY = angleOffset
-
-        else:
-            rotAngleY = 0
-
-        acclX = (accl_x_raw * m.cos(rotAngleY)
-                + accl_z_raw * m.sin(rotAngleY))
-        acclY = accl_y_raw
-        acclZ = (accl_x_raw * -m.sin(rotAngleY)
-                + accl_z_raw * m.cos(rotAngleY))
-
-        gyroX = (gyro_x_raw * m.cos(rotAngleY)
-                + gyro_z_raw * m.sin(rotAngleY))
-        gyroY = gyro_y_raw
-        gyroZ = (gyro_x_raw * -m.sin(rotAngleY)
-                + gyro_z_raw * m.cos(rotAngleY))
-
-        return [acclX, acclY, acclZ, gyroX, gyroY, gyroZ]
-    """
-    """
-    # this zero encoder may not be used for new api?
-    #
-    #	Record the motor and ankle position when the function is called
-    #
-    def zero_encoders(self):
-        self.read_data()
-        self.motor_ticks_offset = self.motorTicksRaw
-        self.ankle_ticks_offset = self.ankleTicksRaw
-
-
-    #
-    #	Update the current sensor information from the system
-    #
-    """
     def read_data(self, soft_sensor_data):
 
         act_pack = fxs.read_device(self.dev_id)
@@ -342,30 +302,8 @@ class ExoBoot:
                          act_pack.batt_volt, act_pack.batt_curr,
                          act_pack.ank_ang, act_pack.ank_vel]
         if self.data_current[self.idx_time] != self.data_exo[self.idx_time]:  # update the data if new data has come in
-            """
-            # no longer needed for new exoboots
-            # !!! Make sure signs are correct.
-            self.motorTicksRaw = self.data_exo[self.idx_motor_angle]
-            self.motorTicksZeroed = self.side * (
-                        self.motorTicksRaw - self.motor_ticks_offset)  # remove the offset, and adjust for side
-
-            self.ankleTicksRaw = self.data_exo[self.idx_ankle_angle]
-            self.ankleTicksZeroed = self.side * (
-                        self.ankleTicksRaw - self.ankle_ticks_offset)  # remove the offset, and adjust for side
-
-            accl_gyro_rotated = self.rotate_imu(self.data_exo[self.idx_accl_x], self.data_exo[self.idx_accl_y],
-                                                self.data_exo[self.idx_accl_z], self.data_exo[self.idx_gyro_x],
-                                                self.data_exo[self.idx_gyro_y], self.data_exo[self.idx_gyro_z])
-            """
-            self.data_current = [-1] * len(self.data_exo)  # clear it.  I will be extending the data_other to the end and I don't want issues.
-
+            self.data_current = [-1] * len(self.data_exo)  # clear the data array here
             self.data_current[self.idx_time] = self.data_exo[self.idx_time]
-            # self.data_current[self.idx_accl_x] = accl_gyro_rotated[0]
-            # self.data_current[self.idx_accl_y] = accl_gyro_rotated[1]
-            # self.data_current[self.idx_accl_z] = accl_gyro_rotated[2]
-            # self.data_current[self.idx_gyro_x] = accl_gyro_rotated[3]
-            # self.data_current[self.idx_gyro_y] = accl_gyro_rotated[4]
-            # self.data_current[self.idx_gyro_z] = accl_gyro_rotated[5]
             self.data_current[self.idx_accl_x] = self.data_exo[self.idx_accl_x]
             self.data_current[self.idx_accl_y] = self.data_exo[self.idx_accl_y]
             self.data_current[self.idx_accl_z] = self.data_exo[self.idx_accl_z]
@@ -383,9 +321,6 @@ class ExoBoot:
             self.data_current[self.idx_ankle_vel] = self.data_exo[self.idx_ankle_vel]
 
             self.data_other = [-1] * len(self.labels_other)
-            """
-            # have to read the soft sensor data in here to be able to use the sensor data in check for toe off function
-            """
             self.data_other[self.idx_soft_sensor_time - self.idx_other_base] = soft_sensor_data[0]
             self.data_other[self.idx_hip_sensor - self.idx_other_base] = soft_sensor_data[1]
             self.data_other[self.idx_knee_sensor - self.idx_other_base] = soft_sensor_data[2]
@@ -393,57 +328,40 @@ class ExoBoot:
             self.check_for_heelstrike()
 
             if self.segmentation_trigger:
-                self.heelstrike_timestamp_previous = self.heelstrike_timestamp_current # log the heelstirke timestamp of the previous gait
+                self.heelstrike_timestamp_previous = self.heelstrike_timestamp_current  # log the heelstirke timestamp of the previous gait
                 self.heelstrike_timestamp_current = self.data_current[self.idx_time]
-                # self.heelstrike_hip_angle_previous = self.heelstrike_hip_angle_current # log the heelstirke soft sensor data of the previous gait
-                # self.heelstrike_hip_angle_current = self.data_other[self.idx_soft_sensor - self.idx_other_base]
-                # self.mhf_percent_gait_previous = self.mhf_percent_gait_current
-                # self.mhf_percent_gait_current = -1
-                self.mhe_percent_gait_previous =  self.mhe_percent_gait_current
+                self.heelstrike_hip_angle_previous = self.heelstrike_hip_angle_current  # log the heelstirke soft sensor data of the previous gait
+                self.heelstrike_hip_angle_current = self.data_other[self.idx_hip_sensor - self.idx_other_base]
+                self.mhe_percent_gait_previous = self.mhe_percent_gait_current
                 self.mhe_percent_gait_current = -1
                 self.mhe_previous = self.mhe_current
                 self.mhe_current = -1
                 self.update_expected_mhe()
                 self.update_expected_duration()
-                # self.expected_mhf = self.update_expected_phase_feature(self.mhf_percent_gait_previous, self.past_mhf)
+                self.update_heelstrike_hip_angle()
 
             self.percent_gait_previous = self.percent_gait
             self.percent_gait_calc()
-
             self.find_mhe()
-
-            """
-            self.check_for_toeoff()
-
-            if self.toeoff_segment_trigger:
-                # self.toeoff_timestamp_previous = self.toeoff_timestamp_current
-                # self.toeoff_timestamp_current = self.data_current[self.idx_time]
-                self.toeoff_percent_gait = self.percent_gait
-                # self.toeoff_hip_angle_previous = self.toeoff_hip_angle_current
-                # self.toeoff_hip_angle_current = self.data_other[self.idx_idx_soft_sensor - self.idx_other_base]
-                self.update_expected_toeoff_gait()
-            """
-
-            # self.find_mhf()
-
-
             self.torque_cmd = (self.current_cmd / 1000 * self.kt if self.current_cmd != None else None)
-
+            """
+            # have to read the soft sensor data in here to be able to use the sensor data in check for toe off function
+            """
             # Gait Estimation Data
             self.data_other[self.idx_percent_gait - self.idx_other_base] = self.percent_gait
             self.data_other[self.idx_heelstrike_armed - self.idx_other_base] = (1 if self.heelstrike_armed else 0)
-            self.data_other[self.idx_segmentation_trigger - self.idx_other_base] = (1 if self.segmentation_trigger else 0)
+            self.data_other[self.idx_segmentation_trigger - self.idx_other_base] = (
+                1 if self.segmentation_trigger else 0)
             self.data_other[self.idx_expected_duration - self.idx_other_base] = self.expected_duration
             self.data_other[self.idx_current_cmd - self.idx_other_base] = self.current_cmd
             self.data_other[self.idx_torque_cmd - self.idx_other_base] = self.torque_cmd
-            self.data_other[self.idx_mhe_gait - self.idx_other_base] = self.expected_mhe
+            self.data_other[self.idx_mhe_gait - self.idx_other_base] = self.expected_mhe_percent_gait
             self.data_current.extend(self.data_other)
 
             if self.should_log:
                 self.log()
 
             self.data_que.append(self.data_current)
-
 
     def log_init(self):
         start_time = datetime.now()
@@ -466,7 +384,6 @@ class ExoBoot:
 
         return data_file
 
-
     def get_free_filename(self, base, extension):
         data_filename = base + extension
         i = 0
@@ -474,7 +391,6 @@ class ExoBoot:
             i += 1
             data_filename = base + "_" + str(i) + extension
         return data_filename
-
 
     def log(self):
         if self.should_log:
@@ -498,50 +414,43 @@ class ExoBoot:
         else:
             print("exo_defs :: log(self) : \n\tYOU WANTED TO LOG VALUES BUT LOGGING DATA WAS NOT SELECTED")
 
-
     def ankle_torque_to_current(self, torque):
         # get the current based on the torque cmd and the system state
         current = torque / self.kt
-
         return current
-
 
     # ankle angle conversion in here is not needed.
     def ticks_to_angle(self, ticks):
         return ticks * TICKS_TO_ANGLE_COEFF
-
 
     def define_current_gains(self, kp, ki, ff):  # for impedance also take in the stiffness and damping
         self.currentKp = kp
         self.currentKi = ki
         self.currentff = ff
 
-
     # check the api that modified in here
     def set_controller(self, controlMode):
         self.mode = controlMode  # store the mode so we can easily check what is set as the Dephy lib doesn't return anything to know the current mode
-        fxs.send_motor_command(self.dev_id, fxe.FX_NONE,0)  # change the control mode to the one requested,  THIS MUST BE DONE BEFORE THE GAINS ARE SENT TO THE EXO
+        fxs.send_motor_command(self.dev_id, fxe.FX_NONE,
+                               0)  # change the control mode to the one requested,  THIS MUST BE DONE BEFORE THE GAINS ARE SENT TO THE EXO
 
         if self.mode == fxe.FX_NONE:
             self.current_cmd = None
             fxs.set_gains(self.dev_id, 0, 0, 0, 0, 0, 0)  # clear the gains
             fxs.send_motor_command(self.dev_id, fxe.FX_NONE, 0)
-
         elif self.mode == fxe.FX_CURRENT:
             self.current_cmd = 0
             self.set_exo_current(0)  # set the current to zero to avoid surprises
             fxs.set_gains(self.dev_id, self.currentKp, self.currentKi,
-                      0, 0, 0, self.currentff)  # set the gains for the current control
-
+                          0, 0, 0, self.currentff)  # set the gains for the current control
         else:
             self.current_cmd = None
-            fxs.set_gains(self.dev_id, 0, 0, 0, 0, 0, 0) # clear the gains
+            fxs.set_gains(self.dev_id, 0, 0, 0, 0, 0, 0)  # clear the gains
             fxs.send_motor_command(self.dev_id, fxe.FX_NONE, 0)
 
     #
     #	Sends the current command accounting for side, positive is plantar flexion
     #
-
     # check the api that modified in here
     def set_exo_current(self, currentCommand):
         if abs(currentCommand) < CURRENT_LIMIT:
@@ -554,56 +463,39 @@ class ExoBoot:
             # setMotorCurrent(self.dev_id, self.side*CURRENT_LIMIT);  # set the current on the exo
             fxs.send_motor_command(self.dev_id, fxe.FX_CURRENT, CURRENT_LIMIT)
 
-    """
+    #
     # initialize the torque profile
-    """
-    # def init_collins_profile(self, mass=None, ramp_start_percent_gait=None, onset_percent_gait=None, peak_percent_gait=None,
-    #                          stop_percent_gait=None, onset_torque=None, normalized_peak_torque=None):
-    def init_collins_profile(self, mass=None, ramp_start_percent_gait=None, onset_percent_gait=None, stop_percent_gait=None,
-                             onset_torque=None, normalized_peak_torque=None):
+    #
+    def init_collins_profile(self, ramp_start_percent_gait, onset_torque):
 
-        # if (self.expected_mhe != -1) and  (self.expected_toeoff_phase != -1):
-        if self.expected_mhe != -1:
-            if (mass != None):
-                self.user_mass = mass  # kg
-            if (ramp_start_percent_gait != None):
-                self.t0 = ramp_start_percent_gait
-            if (onset_percent_gait != None):
-                self.t1 = onset_percent_gait
-            # if (peak_percent_gait != None):
-            #     self.t2 = peak_percent_gait
-            if (stop_percent_gait != None):
-                self.t3 = stop_percent_gait
-            self.t2 = self.expected_mhe # use mhe percent gait as the peak percent gait
-            # print('ppg: ' + str(self.t2))
-            # self.t3 = self.expected_toeoff_phase
-            if (onset_torque != None):
-                self.ts = onset_torque
-            if (normalized_peak_torque != None):
-                self.peak_torque_normalized = normalized_peak_torque
+        if self.expected_mhe_percent_gait != -1:
+            self.t0 = ramp_start_percent_gait
+            self.t1 = 0.9 * self.expected_mhe_percent_gait
+            self.t2 = self.expected_mhe_percent_gait  # use mhe percent gait as the peak percent gait
+            self.t3 = 1.1 * self.expected_mhe_percent_gait
+            self.ts = onset_torque
 
-            if (self.user_mass != -1 and self.t0 != -1,
-                self.t1 != -1 and self.t2 != -1 and self.t3 != -1 and self.ts != -1 and self.peak_torque_normalized != -1):
+            if (self.t0 != -1, self.t1 != -1 and self.t2 != -1 and self.t3 != -1 and self.ts != -1
+                               and self.expected_heelstrike_hip_angle != -1 and self.expected_mhe_angle != -1):
 
-                self.tp = self.user_mass * self.peak_torque_normalized
+                self.tp = (self.expected_heelstrike_hip_angle - self.expected_mhe_angle) / 3
 
                 self.a1 = (2 * (self.tp - self.ts)) / m.pow((self.t1 - self.t2), 3)
                 self.b1 = -((3 * (self.t1 + self.t2) * (self.tp - self.ts)) / m.pow((self.t1 - self.t2), 3))
                 self.c1 = (6 * self.t1 * self.t2 * (self.tp - self.ts)) / m.pow((self.t1 - self.t2), 3)
-                self.d1 = -((-m.pow(self.t1, 3) * self.tp + 3 * m.pow(self.t1, 2) * self.t2 * self.tp - 3 * self.t1 * m.pow(
+                self.d1 = -((-m.pow(self.t1, 3) * self.tp + 3 * m.pow(self.t1,
+                                                                      2) * self.t2 * self.tp - 3 * self.t1 * m.pow(
                     self.t2, 2) * self.ts + m.pow(self.t2, 3) * self.ts) / m.pow((self.t1 - self.t2), 3))
 
                 self.a2 = -((self.tp - self.ts) / (2 * m.pow((self.t2 - self.t3), 3)))
                 self.b2 = (3 * self.t3 * (self.tp - self.ts)) / (2 * m.pow((self.t2 - self.t3), 3))
                 self.c2 = (3 * (m.pow(self.t2, 2) - 2 * self.t2 * self.t3) * (self.tp - self.ts)) / (
-                            2 * m.pow((self.t2 - self.t3), 3))
-                self.d2 = -((3 * m.pow(self.t2, 2) * self.t3 * self.tp - 6 * self.t2 * m.pow(self.t3, 2) * self.tp + 2 * m.pow(
-                    self.t3, 3) * self.tp - 2 * m.pow(self.t2, 3) * self.ts + 3 * m.pow(self.t2, 2) * self.t3 * self.ts) / (
-                                        2 * m.pow((self.t2 - self.t3), 3)))
-
-                # print('ExoBoot :: init_collins_profile : one of the parameters is not set' + \
-                #       '\n peak_percent_gait : ' + str(self.t2) + \
-                #       '\n stop_percent_gait : ' + str(self.t3) )
+                        2 * m.pow((self.t2 - self.t3), 3))
+                self.d2 = -((3 * m.pow(self.t2, 2) * self.t3 * self.tp - 6 * self.t2 * m.pow(self.t3,
+                                                                                             2) * self.tp + 2 * m.pow(
+                    self.t3, 3) * self.tp - 2 * m.pow(self.t2, 3) * self.ts + 3 * m.pow(self.t2,
+                                                                                        2) * self.t3 * self.ts) / (
+                                    2 * m.pow((self.t2 - self.t3), 3)))
 
             else:
                 print('ExoBoot :: init_collins_profile : one of the parameters is not set' + \
@@ -615,63 +507,61 @@ class ExoBoot:
                       '\n onset_torque : ' + str(self.ts) + \
                       '\n normalized_peak_torque : ' + str(self.peak_torque_normalized))
 
-    """
+    #
     # start to run the torque profile
-    """
+    #
     def run_collins_profile(self, soft_sensor_data):
-    # def run_collins_profile(self):
         # update data
-        # if not external_read:
         self.read_data(soft_sensor_data)
         # print('exoBoot :: run_collins_profile : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ ' : percent_gait : ' + str(self.percent_gait))
 
         if self.percent_gait != -1:
             if (self.percent_gait <= self.t1) and (self.t0 <= self.percent_gait):  # torque ramp to ts at t1
-                # 1 cout << "exoBoot :: runCollinsProfile : In t1 region" << endl;
                 if self.mode != fxe.FX_CURRENT:
                     self.set_controller(fxe.FX_CURRENT)
 
                 tau = self.ts / (self.t1 - self.t0) * self.percent_gait - self.ts / (self.t1 - self.t0) * self.t0
-                # 1 cout << "exoBoot :: runCollinsProfile : tau = " << tau << endl;
-                self.set_exo_current(max(NO_SLACK_CURRENT, A_TO_MA(self.ankle_torque_to_current(NM_TO_NMM(tau)))))  # Commented out till output tested.
+                self.set_exo_current(max(NO_SLACK_CURRENT, A_TO_MA(
+                    self.ankle_torque_to_current(NM_TO_NMM(tau)))))  # Commented out till output tested.
             # print ('exoBoot :: run_collins_profile : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ '  T1 Region : tau : ' + str(tau) )
 
             elif self.percent_gait <= self.t2:  # the rising spline
-                # 1 cout << "exoBoot :: runCollinsProfile : In t2 region" << endl;
                 if self.mode != fxe.FX_CURRENT:
                     self.set_controller(fxe.FX_CURRENT)
 
-                tau = self.a1 * m.pow(self.percent_gait, 3) + self.b1 * m.pow(self.percent_gait,2) + self.c1 * self.percent_gait + self.d1
-                # 1 cout << "exoBoot :: runCollinsProfile : tau = " << tau << endl;
-                self.set_exo_current(A_TO_MA(self.ankle_torque_to_current(NM_TO_NMM(tau))))  # Commented out till output tested.
+                tau = self.a1 * m.pow(self.percent_gait, 3) + self.b1 * m.pow(self.percent_gait,
+                                                                              2) + self.c1 * self.percent_gait + self.d1
+                self.set_exo_current(
+                    A_TO_MA(self.ankle_torque_to_current(NM_TO_NMM(tau))))  # Commented out till output tested.
                 # print ('exoBoot :: run_collins_profile : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ '  T2 Region : tau : ' + str(tau) )
 
             elif self.percent_gait <= self.t3:  # the falling spline
-                # 1 cout << "exoBoot :: runCollinsProfile : In t3 region" << endl;
                 if self.mode != fxe.FX_CURRENT:
                     self.set_controller(fxe.FX_CURRENT)
 
-                tau = self.a2 * m.pow(self.percent_gait, 3) + self.b2 * m.pow(self.percent_gait,2) + self.c2 * self.percent_gait + self.d2
-                # 1 cout << "exoBoot :: runCollinsProfile : tau = " << tau << endl;
-                self.set_exo_current(A_TO_MA(self.ankle_torque_to_current(NM_TO_NMM(tau))))  # Commented out till output tested.
+                tau = self.a2 * m.pow(self.percent_gait, 3) + self.b2 * m.pow(self.percent_gait,
+                                                                              2) + self.c2 * self.percent_gait + self.d2
+                self.set_exo_current(
+                    A_TO_MA(self.ankle_torque_to_current(NM_TO_NMM(tau))))  # Commented out till output tested.
                 # print ('exoBoot :: run_collins_profile : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ '  T3 Region : tau : ' + str(tau) )
 
             else:  # go to the slack position if we aren't commanding a specific value
                 tau = 0
-                self.set_exo_current(NO_SLACK_CURRENT) # just enough to keep a small tension in the cable
+                self.set_exo_current(NO_SLACK_CURRENT)  # just enough to keep a small tension in the cable
 
     def percent_gait_calc(self):
         if -1 != self.expected_duration:  # if the expected duration is set calculate the percent gait
-            self.percent_gait = 100 * (self.data_current[self.idx_time] - self.heelstrike_timestamp_current) / self.expected_duration
+            self.percent_gait = 100 * (
+                    self.data_current[self.idx_time] - self.heelstrike_timestamp_current) / self.expected_duration
 
         if 100 < self.percent_gait:  # if it has gone past 100 just hold 100
             self.percent_gait = 100
-
-
-    # print ('exoBoot :: percent_gait_calc : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ '  percent_gait : ' + str(self.percent_gait) )
+        # print ('exoBoot :: percent_gait_calc : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ '  percent_gait : ' + str(self.percent_gait) )
 
     def update_expected_duration(self):
-        # TODO : In addition to checking that the step time is within a range, also check the the time it is armed is within the typical time.  Common errors occur from short spikes in acceleration that can have a close frequency.
+        # TODO : In addition to checking that the step time is within a range,
+        #  also check the the time it is armed is within the typical time.
+        #  Common errors occur from short spikes in acceleration that can have a close frequency.
 
         step_time = self.heelstrike_timestamp_current - self.heelstrike_timestamp_previous
         # armed_time = 0
@@ -683,24 +573,26 @@ class ExoBoot:
         if -1 in self.past_gait_times:  # if all the values haven't been replaced
             self.past_gait_times.insert(0, step_time)  # insert the new value at the beginning
             self.past_gait_times.pop()  # remove the last value
-        elif (step_time <= 1.75 * max(self.past_gait_times)) and (step_time >= 0.25 * min(self.past_gait_times)):  # and (armed_time > ARMED_DURATION_PERCENT * self.expected_duration)): # a better check can be used.  If the person hasn't stopped or the step is good update the vector.
+        elif (step_time <= 1.5 * max(self.past_gait_times)) and (step_time >= 0.5 * min(self.past_gait_times)):
+            # and (armed_time > ARMED_DURATION_PERCENT * self.expected_duration)): # a better check can be used.
+            # If the person hasn't stopped or the step is good update the vector.
             # !!!THE ARMED TIME CHECK STILL NEEDS TO BE TESTED!!!
             self.past_gait_times.insert(0, step_time)  # insert the new value at the beginning
             self.past_gait_times.pop()  # remove the last value
             # TODO: Add rate limiter for change in expected duration so it can't make big jumps
             self.expected_duration = sum(self.past_gait_times) / len(self.past_gait_times)  # Average to the nearest ms
-
-    # print ('exoBoot :: update_expected_duration : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ '  expected_duration : ' + str(self.expected_duration) )
+        # print ('exoBoot :: update_expected_duration : side : ' + ('LEFT' if self.side == LEFT else 'RIGHT')	+ '  expected_duration : ' + str(self.expected_duration) )
 
     def clear_gait_estimate(self):
         self.past_gait_times = [-1] * NUM_GAIT_TIMES_TO_AVERAGE  # store the most recent gait times
         self.expected_duration = -1  # current estimated gait duration
 
-
     def check_for_heelstrike(self):
         # the trigger on the inversion of the leg is one method.
-        # can also use spikes in acceleration (X seems to be best candidate but may not work well for slower gaits with smaller impacts)
+        # can also use spikes in acceleration
+        # (X seems to be best candidate but may not work well for slower gaits with smaller impacts)
         # Other candidates also possible.
+
         triggered = False
         armed_time = 0
 
@@ -711,42 +603,36 @@ class ExoBoot:
         # for right boot, the segmentation_arm_threashold needs to be negative
         # for left boot, the segmentation_arm_threashold needs to be positive
         if (self.idx == 1):
-            self.segmentation_arm_threashold = -1*self.segmentation_arm_threashold_raw
-        # trigger the heel strike event
-            if (not self.heelstrike_armed) and (self.data_current[self.idx_gyro_z] <= self.segmentation_arm_threashold) and (self.data_current[self.idx_gyro_x] >= 50*gyro_conversion_factor):
-                # if ((not self.heelstrike_armed) and self.data_current[self.idx_gyro_z] >= self.segmentation_arm_threashold) :
+            segmentation_arm_threashold = -1 * self.segmentation_arm_threashold_raw
+            # trigger the heel strike event
+            if ((not self.heelstrike_armed) and (self.data_current[self.idx_gyro_z] <= segmentation_arm_threashold)
+                    and (self.data_current[self.idx_gyro_x] >= 50 * gyro_conversion_factor)):
                 self.heelstrike_armed = True
                 self.armed_timestamp = self.data_current[self.idx_time]
-
             # reset and be prepared for the heel strike event
-            if (self.heelstrike_armed and (self.data_current[self.idx_gyro_z] >= self.segmentation_trigger_threashold) and (
-                    self.data_current[self.idx_gyro_x] <= 0)):
-                # if (self.heelstrike_armed and (self.data_current[self.idx_gyro_z] <= self.segmentation_trigger_threashold) ) :
+            if (self.heelstrike_armed and (self.data_current[self.idx_gyro_z] >= self.segmentation_trigger_threashold)
+                    and (self.data_current[self.idx_gyro_x] <= 0)):
                 self.heelstrike_armed = False
                 self.armed_timestamp = -1
                 if armed_time > ARMED_DURATION_PERCENT / 100 * self.expected_duration:
                     triggered = True
-
         else:
-            self.segmentation_arm_threashold = self.segmentation_arm_threashold_raw
-        # trigger the heel strike event
-            if (not self.heelstrike_armed) and (self.data_current[self.idx_gyro_z] >= self.segmentation_arm_threashold) and (self.data_current[self.idx_gyro_x] >= 50*gyro_conversion_factor):
-                # if ((not self.heelstrike_armed) and self.data_current[self.idx_gyro_z] >= self.segmentation_arm_threashold) :
+            segmentation_arm_threashold = self.segmentation_arm_threashold_raw
+            # trigger the heel strike event
+            if ((not self.heelstrike_armed) and (self.data_current[self.idx_gyro_z] >= segmentation_arm_threashold)
+                    and (self.data_current[self.idx_gyro_x] >= 50 * gyro_conversion_factor)):
                 self.heelstrike_armed = True
                 self.armed_timestamp = self.data_current[self.idx_time]
-
             # reset and be prepared for the heel strike event
-            if (self.heelstrike_armed and (self.data_current[self.idx_gyro_z] <= self.segmentation_trigger_threashold) and (
-                    self.data_current[self.idx_gyro_x] <= 0)):
-                # if (self.heelstrike_armed and (self.data_current[self.idx_gyro_z] <= self.segmentation_trigger_threashold) ) :
+            if (self.heelstrike_armed and (self.data_current[self.idx_gyro_z] <= self.segmentation_trigger_threashold)
+                    and (self.data_current[self.idx_gyro_x] <= 0)):
                 self.heelstrike_armed = False
                 self.armed_timestamp = -1
                 if armed_time > ARMED_DURATION_PERCENT / 100 * self.expected_duration:
                     triggered = True
-
         self.segmentation_trigger = triggered
 
-    def check_for_toeoff(self):
+    def check_for_toeoff(self):  # TODO: find toe off event
         # check whether the toe is off the ground or not
         toeoff_trigger = False
         toeoff_armed_time = 0
@@ -773,49 +659,46 @@ class ExoBoot:
         self.toeoff_segment_trigger = toeoff_trigger
 
     def find_mhe(self):
-        # find the maximum hip extension angle
+        # find the maximum hip extension angle, the smallest hip reading during one gait cycle
         if self.mhe_current == -1:
             self.mhe_current = self.data_other[self.idx_hip_sensor - self.idx_other_base]
             return
 
         mhe_temp = self.data_other[self.idx_hip_sensor - self.idx_other_base]
         # print(str(mhe_temp))
-        # if (self.percent_gait >= 20) and (mhe_temp < self.mhe_current):
         if (self.percent_gait >= 20) and (self.percent_gait <= 53) and (mhe_temp < self.mhe_current):
-        # if (self.percent_gait >= self.t1) and (self.percent_gait <= self.t3) and (mhe_temp < self.mhe_current):
+            # if (self.percent_gait >= self.t1) and (self.percent_gait <= self.t3) and (mhe_temp < self.mhe_current):
             self.mhe_current = mhe_temp
             self.mhe_percent_gait_current = self.percent_gait
 
-    def find_mhf(self):
-        # find the maximum hip flexion angle
-        if -1 == self.toeoff_percent_gait:  # if it is the first time running just record the timestamp
-            self.toeoff_percent_gait = self.percent_gait
+    def update_heelstrike_hip_angle(self):  # update hip angle at heel strike event
+        if -1 in self.past_heelstrike_hip_angles:  # if all the values haven't been replaced
+            self.past_heelstrike_hip_angles.insert(0,
+                                                   self.heelstrike_hip_angle_previous)  # insert the new value at the beginning
+            self.past_heelstrike_hip_angles.pop()  # remove the last value
+        elif (self.heelstrike_hip_angle_previous <= 1.5 * max(self.past_heelstrike_hip_angles)) and \
+                (self.heelstrike_hip_angle_previous >= 0.5 * min(self.past_heelstrike_hip_angles)):
+            self.past_heelstrike_hip_angles.insert(0,
+                                                   self.heelstrike_hip_angle_previous)  # insert the new value at the beginning
+            self.past_heelstrike_hip_angles.pop()  # remove the last value
+            self.expected_heelstrike_hip_angle = sum(self.past_heelstrike_hip_angles) / len(
+                self.past_heelstrike_hip_angles)  # Average to the nearest integer
 
-        mhf_temp = self.data_other[self.idx_hip_sensor - self.idx_other_base]
-
-        if (self.percent_gait >= self.toeoff_percent_gait) and (mhf_temp < self.mhf_current):
-            self.mhf_current = mhf_temp
-            self.mhf_percent_gait_current = self.percent_gait
-
-    def update_expected_toeoff_gait(self):
-        if -1 in self.past_toeoff_times:  # if all the values haven't been replaced
-            self.past_toeoff_times.insert(0, self.toeoff_percent_gait)  # insert the new value at the beginning
-            self.past_toeoff_times.pop()  # remove the last value
-        elif (self.toeoff_percent_gait <= 1.5 * max(self.past_toeoff_times)) and \
-                (self.toeoff_percent_gait >= 0.5 * min(self.past_toeoff_times)):
-            self.past_toeoff_times.insert(0, self.toeoff_percent_gait)  # insert the new value at the beginning
-            self.past_toeoff_times.pop()  # remove the last value
-            self.expected_toeoff_phase = sum(self.past_toeoff_times) / len(self.past_toeoff_times)  # Average to the nearest integer
-
-    def update_expected_mhe(self):
-        if -1 in self.past_mhe:  # if all the values haven't been replaced
-            self.past_mhe.insert(0, self.mhe_percent_gait_previous)  # insert the new value at the beginning
-            self.past_mhe.pop()  # remove the last value
-        elif (self.mhe_percent_gait_previous <= 1.75 * max(self.past_mhe)) and \
-                (self.mhe_percent_gait_previous >= 0.5 * min(self.past_mhe)):
-            self.past_mhe.insert(0, self.mhe_percent_gait_previous)  # insert the new value at the beginning
-            self.past_mhe.pop()  # remove the last value
-            self.expected_mhe = sum(self.past_mhe) / len(self.past_mhe)  # Average to the nearest integer
+    def update_expected_mhe(self):  # Use previous mhe info to plan next gait cycle
+        if -1 in self.past_mhe_times:  # if all the values haven't been replaced
+            self.past_mhe_times.insert(0, self.mhe_percent_gait_previous)  # insert the new value at the beginning
+            self.past_mhe_angles.insert(0, self.mhe_previous)
+            self.past_mhe_times.pop()  # remove the last value
+            self.past_mhe_angles.pop()
+        elif (self.mhe_percent_gait_previous <= 1.5 * max(self.past_mhe_times)) and \
+                (self.mhe_percent_gait_previous >= 0.5 * min(self.past_mhe_times)):
+            self.past_mhe_times.insert(0, self.mhe_percent_gait_previous)  # insert the new value at the beginning
+            self.past_mhe_angles.insert(0, self.mhe_previous)
+            self.past_mhe_times.pop()  # remove the last value
+            self.past_mhe_angles.pop()
+            self.expected_mhe_percent_gait = sum(self.past_mhe_times) / len(
+                self.past_mhe_times)  # Average to the nearest integer
+            self.expected_mhe_angle = sum(self.past_mhe_angles) / len(self.past_mhe_angles)
 
     def __del__(self):
         # TODO: make where it can take single or multiple values
@@ -827,9 +710,12 @@ class ExoBoot:
         # fxStopStreaming(self.dev_id)
         fxs.close(self.dev_id)
 
+
 """
 # Adding soft sensor readings via arduino
 """
+
+
 class Arduino:
 
     def __init__(self):
@@ -850,7 +736,8 @@ class Arduino:
         if len(arduino_ports) > 1:
             warnings.warn('Multiple Arduinos found - using the first')
 
-        arduino = serial.Serial(arduino_ports[0], baudrate=57600)
+        # arduino = serial.Serial(arduino_ports[0], baudrate=57600)
+        arduino = serial.Serial(arduino_ports[0], baudrate=115200)
         # arduino = serial.Serial(arduino_ports[0], baudrate=2000000)
         arduino.flush()
         arduino.reset_input_buffer()
