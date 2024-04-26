@@ -22,5 +22,7 @@ DAQ of soft sensor:
 2. Use the maximum hip extension (MHE) value to replace the normalized peak torque parameter.
 3. The rise/fall times are proportional to the peak time.
 
-
+## Contribution
+(Internal useage only)
+Zenan Zhu, [TRACE lab](https://www.thetracelab.com/)
 
