@@ -18,8 +18,9 @@ DAQ of soft sensor:
 3. Another setup from UML NERVE team: Use esp-32 and Arduino BLE to build the DAQ of the soft sensor. [Details here](https://github.com/jacobbreen25/nsf_soft_sensor_data_collection).
 
 ## This branch is used for replacing manually tuned parameters with hip sensor readings
-1. Use the maximum hip extension (MHE) time to replace the rise time.
+1. Use the maximum hip extension (MHE) time to replace the peak time.
 2. Use the maximum hip extension (MHE) value to replace the normalized peak torque parameter.
+3. The rise/fall times are proportional to the peak time.
 
 
 
