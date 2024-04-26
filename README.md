@@ -23,6 +23,7 @@ DAQ of soft sensor:
 3. The rise/fall times are proportional to the peak time.
 
 ## Contribution
-(Internal useage only)
+(Internal usage only)
+
 Zenan Zhu, [TRACE lab](https://www.thetracelab.com/)
 
