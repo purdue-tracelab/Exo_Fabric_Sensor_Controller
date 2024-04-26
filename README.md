@@ -15,7 +15,7 @@ For battery information: https://dephy.com/faster/battery/BA30/C_0002_DS_0001_V0
 ## How to actuate Dephy Exoboots
 ### Depending on different purchase options of Dephy Exoboots, you may have:
 1. `2021-08-24-Plan-WalkOnly-Win-32-v7.2.0`: New plan 4.0 GUI for Dephy controller mode (as we don't have the default Dephy controller, this one is not necessary to use)
-3. `Actuator-Package-7.2.0`: New API package for custom controller mode (the main folder used here)
+3. `Actuator-Package-7.2.0`: New API package for custom controller mode (the main folder used here, can be download from Dephy website)
 4. `dephy_bootloader`: The boot loader for switching between two controller modes
    (as we don't have the default Dephy controller, this one is not necessary to use)
 
