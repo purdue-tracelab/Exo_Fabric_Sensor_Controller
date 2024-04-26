@@ -67,5 +67,6 @@ You can find how the exo torque profile is defined based on the following papers
 2. Zhang, J., Fiers, P., Witte, K.A., Jackson, R.W., Poggensee, K.L., Atkeson, C.G. and Collins, S.H., 2017. Human-in-the-loop optimization of exoskeleton assistance during walking. Science, 356(6344), pp.1280-1284.
 
 ## Contribution
-(Internal useage only)
+(Internal usage only)
+
 Zenan Zhu, [TRACE lab](https://www.thetracelab.com/)
