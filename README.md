@@ -22,6 +22,8 @@ DAQ of soft sensor:
 2. Use the maximum hip extension (MHE) value to replace the normalized peak torque parameter.
 3. The rise/fall times are proportional to the peak time.
 
+## Reference
+[Rizzoli Markersets](https://v23.wiki.optitrack.com/index.php?title=Rizzoli_Markersets#Rizzoli_Body_Protocol.2837.29)
 ## Contribution
 (Internal usage only)
 
