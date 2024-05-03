@@ -28,17 +28,18 @@ For battery information: https://dephy.com/faster/battery/BA30/C_0002_DS_0001_V0
 1. Locate the `Getting Started with the ActPack` in the start website
 2. Download API package from: https://github.com/DephyInc/Actuator-Package
 3. Find Tags `v7.2.0` (or the latest stable version of API package) and download the API package
-4. Follow the `README.md` in the GitHub website and install the Install `FlexSEA` Library 
+4. Follow the `README.md` on the GitHub (tag `v7.2.0`) website and install the Install `FlexSEA` Library.  
 5. To install `MinGW` on Windows 10 x64,  use `MinGW-W64` Online Installer first. Select the options as `x86_64`, `posix`, `seh`
 6. Get the `x86_64-posix-seh` file if `MinGW` cannot be installed properly by the exe file. Search YouTube videos to install `MinGW` and add the path to the system.
 
 If the `FlexSEA` Library is installed successfully, try to run the demo script by connecting the exoboots with a USB cable, but DO NOT put the battery in the boots.	
-1. Demo scripts of python: `..\Actuator-Package-7.2.0\Python\flexsea_demo`, run the python script `run_demos.py` and select `0 read only` for testing
-2. Details in `3 GUI and Demo Scripts` in the Dephy website
-3. You can check the data log file in `DataLog` folder.
-4. Check data units in 13 `Units` on the Dephy website
-5. To communicate with Exoboots, the ports that are used to connect to the boots need to be found. Modify the `port.yaml` file before running any Python scripts
-6. Details in 4.1.1“Pair ExoBoot via Bluetooth (Windows)” on the Dephy website
+1. Demo scripts of python: `..\Actuator-Package-7.2.0\Python\flexsea_demo`, run the python script `run_demos.py` and select `0 read only` for testing.
+   In my case, the Demo scripts can be run on the Command Promot directly, no need to enter virtual environments.
+3. Details in `3 GUI and Demo Scripts` on the Dephy website
+4. You can check the data log file in `DataLog` folder.
+5. Check data units in 13 `Units` on the Dephy website
+6. To communicate with Exoboots, the ports that are used to connect to the boots need to be found. Modify the `port.yaml` file before running any Python scripts
+7. Details in 4.1.1“Pair ExoBoot via Bluetooth (Windows)” on the Dephy website
 
 To get familiar with Dephy API, read demo scripts (i.e., current_control.py) with API definition files that are located in `..\Actuator-Package-7.2.0\Python\flexsea\flexsea`
 1. One API example: `dev_id = fxs.open(port, baud_rate, log_level=6)`
