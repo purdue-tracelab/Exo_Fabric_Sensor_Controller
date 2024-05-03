@@ -34,7 +34,7 @@ For battery information: https://dephy.com/faster/battery/BA30/C_0002_DS_0001_V0
 
 If the `FlexSEA` Library is installed successfully, try to run the demo script by connecting the exoboots with a USB cable, but DO NOT put the battery in the boots.	
 1. Demo scripts of python: `..\Actuator-Package-7.2.0\Python\flexsea_demo`, run the python script `run_demos.py` and select `0 read only` for testing.
-   In my case, the Demo scripts can be run on the Command Promot directly, no need to enter virtual environments.
+   In my case, the demo scripts can be run on the Command Promot directly, no need to enter virtual environments.
 3. Details in `3 GUI and Demo Scripts` on the Dephy website
 4. You can check the data log file in `DataLog` folder.
 5. Check data units in 13 `Units` on the Dephy website
@@ -51,7 +51,7 @@ To get familiar with Dephy API, read demo scripts (i.e., current_control.py) wit
 ### After running the demo scripts:
 
 For the basic controller, put the `basic_controller` folder of this branch under `..\Actuator-Package 7.2.0\Python\` in your PC.
-This basic controller is originally from [url](https://github.com/mit-ll/dephy-boot-interface). 
+This basic controller is originally from [url](https://github.com/mit-ll/dephy-boot-interface). In my case, the python scripts can be run on the Command Promot directly, no need to enter virtual environments.
 1. To run the controller, run `test_1_law.py`. Before that, you need to connect to TWO boots and change the COM ports in the `port.yaml` file
 2. To run the controller with ONE boot, modify `test_1_law_left_boot.py` and run it. The modification of the `test_1_law_left_boot.py` script has not been completed yet; it still needs to be modified. Before running the script, you still need to change the `port.yaml` file.
 3. The main controller definition is in `test_new_def_v2.py` file. Understand each function in the file before running the controller.
