@@ -34,7 +34,8 @@ The soft sensors are not directly communicating with exoboots (not send sensor d
 3. The rise/fall times are proportional to the peak time.
 
 ## Reference
-[Rizzoli Markersets](https://v23.wiki.optitrack.com/index.php?title=Rizzoli_Markersets#Rizzoli_Body_Protocol.2837.29)
+If the MoCap system is used to check the accuracy of the gait event estimation, use [Rizzoli Markersets](https://v23.wiki.optitrack.com/index.php?title=Rizzoli_Markersets#Rizzoli_Body_Protocol.2837.29) for the marker placement on the subject.
+
 ## Contribution
 (Internal usage only)
 
