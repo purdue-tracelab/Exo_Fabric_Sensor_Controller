@@ -13,9 +13,9 @@ DAQ of soft sensor:
    Load `MPR121_driver_BodySuit_test.ino` to the Arduino board. This file is from The Faboratory lab at Yale University [url](https://www.eng.yale.edu/faboratory/).
    
    To log soft sensor data alone, you can use `com_log_four_sensors.py` file.
-   Make sure all FOUR sensors are connected, and the Python script will read data from pin 0 to pin 3. 
+   Make sure all FOUR sensors are connected, and the Python script will read data from pin 0 to pin 3. In my case, pin 0  is left hip sensor; pin 1 is left knee; pin 2 is right hip; pin3 is right knee.
    
-3. Another setup from UML NERVE team: Use esp-32 and Arduino BLE to build the DAQ of the soft sensor. [Details here](https://github.com/jacobbreen25/nsf_soft_sensor_data_collection).
+3. Another setup from UML NERVE team: Use esp-32 and Arduino BLE to build the DAQ of the soft sensor. [Details here](https://github.com/jacobbreen25/nsf_soft_sensor_data_collection). In this git repo, this setup is not used since this project box does not include the MPR121 board, as Yale team is using. 
 
 ## This branch is used for replacing manually tuned parameters with hip sensor readings
 1. Use the maximum hip extension (MHE) time to replace the peak time.
