@@ -29,7 +29,7 @@ The soft sensors are not directly communicating with exoboots (not send sensor d
 4. The heel strike event is detected by knee soft sensor readings.
 
 ## Reference
-If MoCap system is used to check the accuracy of the gait event estimation, use [Rizzoli Markersets](https://v23.wiki.optitrack.com/index.php?title=Rizzoli_Markersets#Rizzoli_Body_Protocol.2837.29) for the marker placement on the subject.
+If the MoCap system is used to check the accuracy of the gait event estimation, use [Rizzoli Markersets](https://v23.wiki.optitrack.com/index.php?title=Rizzoli_Markersets#Rizzoli_Body_Protocol.2837.29) for the marker placement on the subject.
 
 ## Contribution
 (Internal usage only)
